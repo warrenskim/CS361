@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Comparer</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css')}}">
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body> 
+    <div class="container">
+
+        <!-- Back button -->
+        <form action="/">
+            <button class="btn back-btn" type="submit"><i class='bx bx-arrow-back'></i> Back</button>
+        </form>
+
+        <!-- State 1 Table-->
+        <div class="column">
+            <table class="comparison-table">
+                <tr>
+                    <th class="state-name">{{state1_name}}</th>
+                </tr>
+                <tr>
+                    <td><img class="flag" src="{{flag1}}"></td>
+                </tr>
+                
+                {% for key, value in state1_data.items() %}
+                    <tr>
+                        <td><b>{{key}}</b> : {{value}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- State 2 Table -->
+        <div class="column">
+            <table class="comparison-table">
+                <tr>
+                    <th class="state-name">{{state2_name}}</th>
+                </tr>
+                <tr>
+                    <td><img class="flag" src="{{flag2}}"></td>
+                </tr>
+                
+                {% for key, value in state2_data.items() %}
+                    <tr>
+                        <td><b>{{key}}</b> : {{value}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+
+</html>
