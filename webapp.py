@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import requests
 from wikiscraper import flagscraper, search_formatter, wiki_url, wikiscraper, formatted_wikiscraper
 import os
 
 app = Flask(__name__)
+CORS(app)
+
 
 # TAKE THIS OUT WHEN DEPLOYING
 app.config['ENV'] = 'development'
