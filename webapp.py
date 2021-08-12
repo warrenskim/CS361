@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
+import json
 import requests
 from wikiscraper import flagscraper, search_formatter, wiki_url, wikiscraper, formatted_wikiscraper
 import os
@@ -7,8 +8,6 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-
-# TAKE THIS OUT WHEN DEPLOYING
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 app.config['TESTING'] = True
@@ -33,8 +32,12 @@ def get_comparison():
     scraped1 = wikiscraper(url1)
     scraped2 = wikiscraper(url2)
 
-    flag1 = flagscraper(url1)
-    flag2 = flagscraper(url2)
+    # Una Lee's state flag scraper microservice:
+    flag1_object = json.loads(requests.get("https://unalee-test.herokuapp.com/getflag?state="+state1_search).text)
+    flag2_object = json.loads(requests.get("https://unalee-test.herokuapp.com/getflag?state="+state2_search).text)
+
+    flag1 = flag1_object["State Flag Image URL"][2:]
+    flag2 = flag2_object["State Flag Image URL"][2:]
 
     return render_template('comparison.html', state1_name=state1_name, state2_name=state2_name, 
     state1_data=scraped1, state2_data=scraped2, flag1=flag1, flag2=flag2)
