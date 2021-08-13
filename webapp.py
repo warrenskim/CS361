@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import json
 import requests
-from wikiscraper import flagscraper, search_formatter, wiki_url, wikiscraper, formatted_wikiscraper
+from wikiscraper import search_formatter, wiki_url, wiki_scraper, formatted_wiki_scraper
 import os
 
 app = Flask(__name__)
@@ -21,28 +21,34 @@ def get_home():
 # Display comparison page
 @app.route("/comparison", methods=['GET', 'POST'])
 def get_comparison():
-    state1_name = request.args.get('state1')
-    state2_name = request.args.get('state2')
+    state1 = request.args.get('state1')
+    state2 = request.args.get('state2')
 
-    state1_search = search_formatter(state1_name)
-    state2_search = search_formatter(state2_name)
+    state1_scraped = get_state_data(state1)
+    state2_scraped = get_state_data(state2)
 
-    url1 = wiki_url(state1_search)
-    url2 = wiki_url(state2_search)
+    # ----- Uses Una Lee's Microservice -----
+    state1_flag = get_state_flag(state1)
+    state2_flag = get_state_flag(state2)
+    # ---------------------------------------
 
-    scraped1 = wikiscraper(url1)
-    scraped2 = wikiscraper(url2)
+    return render_template('comparison.html', state1_name=state1, state2_name=state2, 
+    state1_data=state1_scraped, state2_data=state2_scraped, flag1=state1_flag, flag2=state2_flag)
 
-    # ---- Una Lee's state flag scraper microservice: ----
-    flag1_object = json.loads(requests.get("https://unalee-test.herokuapp.com/getflag?state="+state1_search).text)
-    flag2_object = json.loads(requests.get("https://unalee-test.herokuapp.com/getflag?state="+state2_search).text)
 
-    flag1 = flag1_object["State Flag Image URL"][2:]
-    flag2 = flag2_object["State Flag Image URL"][2:]
-    # ----------------------------------------------------
+def get_state_data(state):
+    formatted_search = search_formatter(state)
+    url = wiki_url(formatted_search)
+    scraped_data = wiki_scraper(url)
+    return scraped_data
 
-    return render_template('comparison.html', state1_name=state1_name, state2_name=state2_name, 
-    state1_data=scraped1, state2_data=scraped2, flag1=flag1, flag2=flag2)
+
+# Una Lee's Flag Scraper Microservice 
+def get_state_flag(state):
+    formatted_search = search_formatter(state)
+    flag_object = json.loads(requests.get("https://unalee-test.herokuapp.com/getflag?state="+formatted_search).text)
+    flag = flag_object["State Flag Image URL"][2:]
+    return flag
 
 
 # Route for wikipedia infobox scraper microservice -- for teammate use 
@@ -54,16 +60,9 @@ def get_search():
 
     url = wiki_url(search_formatted)
 
-    scraped = formatted_wikiscraper(url)
+    scraped = formatted_wiki_scraper(url)
     return jsonify(scraped)
 
-
-@app.route("/test", methods=['GET', 'POST'])
-def get_test():
-    Object = requests.get("http://127.0.0.1:3157/search?search=Smith+Rock+state+park")
-    Object1 = Object.text
-
-    return render_template('test.html', Object1=Object1)
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 3157)) 

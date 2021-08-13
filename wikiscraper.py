@@ -2,6 +2,7 @@ import string
 import requests
 from bs4 import BeautifulSoup
 
+
 def search_formatter(search):
     search_input = string.capwords(search)
     input_list = search_input.split()
@@ -20,7 +21,7 @@ def wiki_url(search_word):
     return url
 
 
-def wikiscraper(url):
+def wiki_scraper(url):
     url_open = requests.get(url)
     soup = BeautifulSoup(url_open.content, 'html.parser')
 
@@ -36,8 +37,9 @@ def wikiscraper(url):
         
     return results
 
+
 # Used for "/search" route -- microservice for teammates
-def formatted_wikiscraper(url):
+def formatted_wiki_scraper(url):
     url_open = requests.get(url)
     soup = BeautifulSoup(url_open.content, 'html.parser')
 
@@ -52,13 +54,3 @@ def formatted_wikiscraper(url):
         results[key] = value
         
     return results
-
-
-def flagscraper(url):
-    url_open = requests.get(url)
-    soup = BeautifulSoup(url_open.content, 'html.parser')
-
-    image = soup.find("meta", property="og:image")
-    image_url = image.get("content", None)
-        
-    return image_url
