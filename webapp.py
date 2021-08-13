@@ -18,6 +18,7 @@ def get_home():
     return render_template('index.html')
 
 
+# Display comparison page
 @app.route("/comparison", methods=['GET', 'POST'])
 def get_comparison():
     state1_name = request.args.get('state1')
@@ -32,19 +33,19 @@ def get_comparison():
     scraped1 = wikiscraper(url1)
     scraped2 = wikiscraper(url2)
 
-    # Una Lee's state flag scraper microservice:
+    # ---- Una Lee's state flag scraper microservice: ----
     flag1_object = json.loads(requests.get("https://unalee-test.herokuapp.com/getflag?state="+state1_search).text)
     flag2_object = json.loads(requests.get("https://unalee-test.herokuapp.com/getflag?state="+state2_search).text)
 
     flag1 = flag1_object["State Flag Image URL"][2:]
     flag2 = flag2_object["State Flag Image URL"][2:]
+    # ----------------------------------------------------
 
     return render_template('comparison.html', state1_name=state1_name, state2_name=state2_name, 
     state1_data=scraped1, state2_data=scraped2, flag1=flag1, flag2=flag2)
 
 
-# Need to make a request for this --> If Python use requests.get(url for search) or if Node url parser
-# How do they send the request from their language
+# Route for wikipedia infobox scraper microservice -- for teammate use 
 @app.route("/search", methods=['GET', 'POST'])
 def get_search():
     search_name = request.args.get('search')

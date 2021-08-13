@@ -1,6 +1,5 @@
 import string
 import requests
-import json
 from bs4 import BeautifulSoup
 
 def search_formatter(search):
@@ -37,7 +36,7 @@ def wikiscraper(url):
         
     return results
 
-
+# Used for "/search" route -- microservice for teammates
 def formatted_wikiscraper(url):
     url_open = requests.get(url)
     soup = BeautifulSoup(url_open.content, 'html.parser')
