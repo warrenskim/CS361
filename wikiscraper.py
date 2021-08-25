@@ -54,3 +54,13 @@ def formatted_wiki_scraper(url):
         results[key] = value
         
     return results
+
+
+def flag_scraper(url):
+    url_open = requests.get(url)
+    soup = BeautifulSoup(url_open.content, 'html.parser')
+
+    image = soup.find("meta", property="og:image")
+    image_url = image.get("content", None)
+        
+    return image_url
